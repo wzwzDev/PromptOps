@@ -9,7 +9,8 @@ export default function FuturisticGlow({ children }: { children: React.ReactNode
       p={2}
       bgGradient="linear(to-r, #232526, #414345)"
       color="white"
-      transition="box-shadow 0.3s"
+      transition="box-shadow 0.6s"
+      className="glow-animate"
       _hover={{ boxShadow: '0 0 48px 16px #00eaff, 0 0 96px 32px #a259f7' }}
     >
       {children}

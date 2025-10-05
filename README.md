@@ -41,6 +41,10 @@ docker compose up --build
 - Backend: http://localhost:8000
 - Frontend: http://localhost:5173
 
+Tailwind + Vite notes:
+- The frontend uses Tailwind via PostCSS. A named volume `promptops_frontend_node_modules` is mounted at `/app/node_modules` so dependencies persist across container rebuilds. If you ever see a PostCSS error like "Cannot find module 'tailwindcss'", rebuild the frontend or remove the volume once and re-up: `docker compose down -v; docker compose up --build`.
+- Vite requires any CSS `@import` to come before all other statements. We keep the Google Fonts import at the very top of `src/index.css`.
+
 ### Configure providers (optional)
 - Mock provider requires no setup.
 - Ollama: Install Ollama and pull a local model (e.g., `ollama pull llama3:8b`), then expose it to the backend via `OLLAMA_HOST`.
@@ -82,6 +86,8 @@ cd frontend
 npm install
 npm run dev
 ```
+
+If you hit a CSS error "@import must precede all other statements", ensure the first line of `src/index.css` begins with the Google Fonts `@import` and that no comments or rules appear before it.
 
 ## Run models (Runner UI and API)
 

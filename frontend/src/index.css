@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+	height: 100%;
+}
+
+body {
+	@apply bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-100;
+	font-family: Inter, ui-sans-serif, system-ui, Segoe UI, Arial;
+}
+
+.glass {
+	@apply bg-white/50 dark:bg-slate-800/40 backdrop-blur-xs shadow-glass border border-white/40 dark:border-slate-700/60 rounded-xl;
+}
+
+.pro-card {
+	@apply glass p-4 md:p-6 shadow-sm hover:shadow-md transition-shadow duration-200 border border-white/40 dark:border-slate-700/60;
+}
+
+.pro-badge {
+	@apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gradient-to-r from-brand-400 to-brand-600 text-white shadow-sm;
+}
+
+.pro-focus {
+	@apply focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 rounded-md;
+}
+
+.pro-header {
+	@apply sticky top-0 z-30 glass px-4 py-2 flex items-center justify-between backdrop-saturate-150;
+}
+
+.glow-animate {
+	animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+	0%, 100% { box-shadow: 0 0 0px rgba(68,103,255,0.0), 0 0 0px rgba(162,89,247,0.0); }
+	50% { box-shadow: 0 0 25px rgba(68,103,255,0.25), 0 0 45px rgba(162,89,247,0.2); }
+}
