@@ -1,0 +1,33 @@
+services:
+  backend:
+    build: ./backend
+    container_name: promptops-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - CORS_ORIGINS=http://localhost:5173
+      - OPENAI_API_KEY=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
+    volumes:
+      - ./backend:/app
+      - promptops_db:/app/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    container_name: promptops-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    depends_on:
+      - backend
+
+volumes:
+  promptops_db:
