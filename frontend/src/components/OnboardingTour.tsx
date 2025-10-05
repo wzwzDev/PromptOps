@@ -43,7 +43,7 @@ export default function OnboardingTour({ run, onFinish }: { run: boolean, onFini
       showProgress
       styles={{ options: { zIndex: 10000 } }}
       callback={(data: CallBackProps) => {
-        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(data.status)) {
+        if (data.status === 'finished' || data.status === 'skipped') {
           onFinish?.()
         }
       }}
