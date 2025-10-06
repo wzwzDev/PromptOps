@@ -11,6 +11,7 @@ const DEFAULT_ITEMS = [
   { key: 'compare', label: 'Compare' },
   { key: 'logs', label: 'Logs' },
   { key: 'boards', label: 'Boards' },
+  { key: 'interview-prep', label: 'Interview Prep' },
 ]
 
 export default function SidebarNav({ active, onSelect, items = DEFAULT_ITEMS }: { active: string, onSelect: (key: string) => void, items?: { key: string, label: string }[] }) {

@@ -22,7 +22,7 @@ export default function JobTailorForm() {
     setError(null);
     setResult(null);
     try {
-      const res = await fetch('http://localhost:8000/api/tailor/generate', {
+  const res = await fetch('http://localhost:8000/api/career/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -47,7 +47,7 @@ export default function JobTailorForm() {
   };
 
   return (
-    <Box maxW="2xl" mx="auto" mt={10} p={8} bg="white" rounded="2xl" boxShadow="lg">
+  <Box maxW="2xl" mx="auto" mt={10} p={8} bgGradient="linear(to-br, teal.100, blue.50)" rounded="2xl" boxShadow="2xl" border="2px solid" borderColor="teal.300">
       <Heading size="lg" mb={6} textAlign="center">Tailor CV & Cover Letter for a Job</Heading>
       <form onSubmit={handleSubmit}>
         <VStack spacing={5} align="stretch">

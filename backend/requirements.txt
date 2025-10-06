@@ -7,3 +7,11 @@ python-multipart==0.0.12
 orjson==3.10.7
 numpy==2.1.2
 httpx==0.27.2
+openai
+# For DOCX generation
+docxtpl
+# For PDF extraction
+pdfminer.six==20221105
+# Force Docker rebuild: 2025-10-06
+# Force Docker rebuild: 2025-10-06
+# Force Docker rebuild: 2025-10-06

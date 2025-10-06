@@ -1,3 +1,9 @@
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  content: string;
+  description?: string;
+}
 export interface Log {
   id: number
   prompt: string

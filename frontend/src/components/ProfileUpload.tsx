@@ -28,11 +28,26 @@ export default function ProfileUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploading(true);
-    // TODO: Send form and file to backend API
-    setTimeout(() => {
-      setUploading(false);
+    setSuccess(false);
+    try {
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      if (cvFile) {
+        formData.append('cv', cvFile);
+      }
+      const res = await fetch('http://localhost:8000/api/profile/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
       setSuccess(true);
-    }, 1200);
+    } catch (err) {
+      setSuccess(false);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
