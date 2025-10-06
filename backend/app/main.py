@@ -11,10 +11,12 @@ from .routers import run as run_router
 from .routers import todos
 from .routers import baseline
 from .routers import coach
+from .routers import profile
+from .routers import tailor
 
 app = FastAPI(default_response_class=ORJSONResponse, title="PromptOps API")
 
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -37,6 +39,8 @@ app.include_router(boards.router)
 app.include_router(todos.router)
 app.include_router(baseline.router)
 app.include_router(coach.router)
+app.include_router(profile.router)
+app.include_router(tailor.router)
 
 
 @app.get("/health")

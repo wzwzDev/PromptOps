@@ -1,6 +1,9 @@
 import PromptComparePanel from './components/PromptComparePanel'
 import SidebarNav from './components/SidebarNav'
 import HelpModal from './components/HelpModal'
+import SmartAssistant from './components/SmartAssistant'
+import ProfileUpload from './components/ProfileUpload'
+import JobTailorForm from './components/JobTailorForm'
 import { Box, Container, Heading, Stack, SimpleGrid, useColorMode, useColorModeValue, Button, Flex, HStack, IconButton, Text, Select, Input, Badge } from '@chakra-ui/react'
 import OnboardingTour from './components/OnboardingTour'
 import FuturisticGlow from './components/FuturisticGlow'
@@ -20,7 +23,7 @@ import Guide from './components/Guide'
 import DailyRequestsChart from './charts/DailyRequestsChart'
 import LatencyChart from './charts/LatencyChart'
 import TokenUsageChart from './charts/TokenUsageChart'
-import { fetchLogs, fetchMetrics, purgeAll, addLogToBoard, listBoards } from './lib/api'
+import { fetchLogs, fetchMetrics, purgeAll, addLogToBoard, listBoards, checkHealth } from './lib/api'
 import type { Log, Metrics, PaginatedLogs, Board } from './types'
 
 export default function App() {
@@ -38,6 +41,8 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('experiment')
   const [essentials, setEssentials] = useState(true)
   const [showHelp, setShowHelp] = useState(false)
+  const [healthStatus, setHealthStatus] = useState<'ok' | 'error' | 'loading'>('loading')
+  const [sharedPrompt, setSharedPrompt] = useState<string>('')
   const location = useLocation()
 
   // ...existing code...
@@ -65,6 +70,21 @@ export default function App() {
     loadBoards()
   }, [])
 
+  // Health check
+  useEffect(() => {
+    const checkBackendHealth = async () => {
+      try {
+        await checkHealth()
+        setHealthStatus('ok')
+      } catch {
+        setHealthStatus('error')
+      }
+    }
+    checkBackendHealth()
+    const interval = setInterval(checkBackendHealth, 30000) // Check every 30s
+    return () => clearInterval(interval)
+  }, [])
+
   // Expose Guide as a route: when path is /guide, switch section to Guide
   useEffect(() => {
     if (location.pathname === '/guide') {
@@ -80,6 +100,13 @@ export default function App() {
     }
   }, [location.pathname, location.hash])
 
+  // Clear shared prompt when leaving runner section
+  useEffect(() => {
+    if (activeSection !== 'runner') {
+      setSharedPrompt('')
+    }
+  }, [activeSection])
+
   return (
     <Flex minH="100vh" bg={bg} className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950">
       <SidebarNav
@@ -87,11 +114,14 @@ export default function App() {
         onSelect={setActiveSection}
         items={essentials ? [
           { key: 'experiment', label: 'Experiment' },
+          { key: 'profile', label: 'Profile Upload' },
+          { key: 'tailor', label: 'Tailor CV' },
           { key: 'guide', label: 'Guide' },
           { key: 'runner', label: 'Runner' },
           { key: 'compare', label: 'Compare' },
           { key: 'logs', label: 'Logs' },
           { key: 'boards', label: 'Boards' },
+          { key: 'assistant', label: 'AI Assistant' },
         ] : undefined}
       />
       <Box flex={1} py={6}>
@@ -100,6 +130,18 @@ export default function App() {
                 <div className="flex items-center gap-3">
                   <span className="pro-badge">PRO</span>
                   <Heading size="lg" as="h1">PromptOps Dashboard</Heading>
+                  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    healthStatus === 'ok' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                    healthStatus === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                  }`}>
+                    <div className={`w-2 h-2 rounded-full mr-1 ${
+                      healthStatus === 'ok' ? 'bg-green-500' :
+                      healthStatus === 'error' ? 'bg-red-500' :
+                      'bg-yellow-500 animate-pulse'
+                    }`} />
+                    {healthStatus === 'ok' ? 'API Connected' : healthStatus === 'error' ? 'API Error' : 'Checking API'}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button className="pro-focus" onClick={toggleColorMode}>Toggle {colorMode === 'light' ? 'Dark' : 'Light'}</Button>
@@ -120,10 +162,23 @@ export default function App() {
               </HStack>
             </Box>
           )}
+                    {/* Help Modal */}
           <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
           {activeSection === 'experiment' && (
             <Box className="pro-card" p={4}>
               <Experiment />
+            </Box>
+          )}
+          {activeSection === 'profile' && (
+            <Box className="pro-card" p={4}>
+              {/* CV/Profile Upload UI */}
+              <ProfileUpload />
+            </Box>
+          )}
+          {activeSection === 'tailor' && (
+            <Box className="pro-card" p={4}>
+              {/* Tailor CV & Cover Letter UI */}
+              <JobTailorForm />
             </Box>
           )}
           {activeSection === 'guide' && (
@@ -133,7 +188,11 @@ export default function App() {
           )}
           {activeSection === 'runner' && (
             <Box className="pro-card" p={4}>
-              <div data-tour="runner"><Runner onAfterRun={refresh} /></div>
+              <div data-tour="runner">
+                <Runner 
+                  onAfterRun={refresh}
+                />
+              </div>
             </Box>
           )}
           {activeSection === 'filters' && (
@@ -168,6 +227,22 @@ export default function App() {
           )}
           {activeSection === 'boards' && (
             <Boards />
+          )}
+          {activeSection === 'assistant' && (
+            <Box className="pro-card" p={4}>
+              <SmartAssistant 
+                onUsePrompt={(prompt) => {
+                  // Set the shared prompt and navigate to runner
+                  setSharedPrompt(prompt)
+                  setActiveSection('runner')
+                }}
+                onUseTemplate={(template) => {
+                  // Navigate to runner and apply template
+                  setActiveSection('runner')
+                  // Template will be processed by the SmartAssistant component itself
+                }} 
+              />
+            </Box>
           )}
           {activeSection === 'logs' && (
             <>

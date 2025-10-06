@@ -53,26 +53,26 @@ export default function PromptComparePanel({ logs }: { logs: Log[] }) {
   const bestRunner = left && right ? (score(left) <= score(right) ? 'left' : 'right') : undefined
 
   return (
-    <Box bg="whiteAlpha.100" p={4} rounded="md" my={6}>
+    <Box className="pro-card my-6">
       <Heading size="sm" mb={3}>Prompt & Model Comparison</Heading>
       <HStack mb={3}>
-        <Select placeholder="Select prompts" multiple value={selectedPrompts} onChange={e => setSelectedPrompts(Array.from(e.target.selectedOptions, o => o.value))} w="300px">
+        <Select placeholder="Select prompts" multiple value={selectedPrompts} onChange={e => setSelectedPrompts(Array.from(e.target.selectedOptions, o => o.value))} w="300px" className="pro-focus">
           {prompts.map(p => <option key={p} value={p}>{p.slice(0, 60)}</option>)}
         </Select>
-        <Select placeholder="Select models" multiple value={selectedModels} onChange={e => setSelectedModels(Array.from(e.target.selectedOptions, o => o.value))} w="220px">
+        <Select placeholder="Select models" multiple value={selectedModels} onChange={e => setSelectedModels(Array.from(e.target.selectedOptions, o => o.value))} w="220px" className="pro-focus">
           {models.map(m => <option key={m} value={m}>{m}</option>)}
         </Select>
-        <Button onClick={() => { setSelectedPrompts([]); setSelectedModels([]); }}>Reset</Button>
+        <Button onClick={() => { setSelectedPrompts([]); setSelectedModels([]); }} className="pro-focus">Reset</Button>
       </HStack>
-      <Box bg="blackAlpha.300" p={3} rounded="md" mb={4}>
+      <Box className="glass p-3 rounded-md mb-4 bg-slate-100/50 dark:bg-slate-800/50">
         <Heading size="xs" mb={2}>Compare any two runs</Heading>
         <HStack>
-          <Select placeholder="Left run" value={leftId} onChange={e => setLeftId(e.target.value ? Number(e.target.value) : '')} w="300px">
+          <Select placeholder="Left run" value={leftId} onChange={e => setLeftId(e.target.value ? Number(e.target.value) : '')} w="300px" className="pro-focus">
             {sortedLogs.map(l => (
               <option key={l.id} value={l.id}>#{l.id} · {new Date(l.timestamp).toLocaleString()} · {l.model}{l.version ? ` (${l.version})` : ''}</option>
             ))}
           </Select>
-          <Select placeholder="Right run" value={rightId} onChange={e => setRightId(e.target.value ? Number(e.target.value) : '')} w="300px">
+          <Select placeholder="Right run" value={rightId} onChange={e => setRightId(e.target.value ? Number(e.target.value) : '')} w="300px" className="pro-focus">
             {sortedLogs.map(l => (
               <option key={l.id} value={l.id}>#{l.id} · {new Date(l.timestamp).toLocaleString()} · {l.model}{l.version ? ` (${l.version})` : ''}</option>
             ))}
@@ -99,7 +99,7 @@ export default function PromptComparePanel({ logs }: { logs: Log[] }) {
       </Box>
       <VStack align="stretch" spacing={4}>
         {combos.map((c, i) => (
-          <Box key={i} bg={best && c.prompt === best.prompt && c.model === best.model ? 'green.50' : 'gray.50'} p={3} rounded="md" borderWidth={best && c.prompt === best.prompt && c.model === best.model ? 2 : 1} borderColor={best && c.prompt === best.prompt && c.model === best.model ? 'green.400' : 'gray.200'}>
+          <Box key={i} className={`glass p-3 rounded-md transition-all duration-200 ${best && c.prompt === best.prompt && c.model === best.model ? 'border-2 border-green-400 bg-green-50/50 dark:bg-green-900/20' : 'border border-slate-200 dark:border-slate-700'}`}>
             <HStack justify="space-between">
               <Text fontWeight="bold">Prompt:</Text>
               <Text>{c.prompt.slice(0, 80)}</Text>

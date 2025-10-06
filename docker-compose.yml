@@ -4,12 +4,8 @@ services:
     container_name: promptops-backend
     ports:
       - "8000:8000"
-    environment:
-      - OLLAMA_HOST=http://host.docker.internal:11434
-      - API_HOST=0.0.0.0
-      - API_PORT=8000
-      - CORS_ORIGINS=http://localhost:5173
-      - OPENAI_API_KEY=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
+    env_file:
+      - .env
     volumes:
       - ./backend:/app
       - promptops_db:/app/data
@@ -20,8 +16,8 @@ services:
     container_name: promptops-frontend
     ports:
       - "5173:5173"
-    environment:
-      - VITE_API_BASE=http://localhost:8000
+    env_file:
+      - .env
     volumes:
       - ./frontend:/app
       - promptops_frontend_node_modules:/app/node_modules

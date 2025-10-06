@@ -27,11 +27,11 @@ export default function Boards() {
   }, [activeBoard])
 
   return (
-    <Box boxShadow="lg" borderRadius="xl" bgGradient="linear(to-br, gray.50, gray.200)" p={4}>
+    <Box className="pro-card">
       <Heading size="md" mb={4}>Boards</Heading>
       <HStack mb={3}>
-        <Input value={name} onChange={(e) => setName(e.target.value)} w="300px" placeholder="Board name" />
-        <Button colorScheme="blue" onClick={async () => { await createBoard(name); setName(''); await load() }}>Create</Button>
+        <Input value={name} onChange={(e) => setName(e.target.value)} w="300px" placeholder="Board name" className="pro-focus" />
+        <Button colorScheme="blue" onClick={async () => { await createBoard(name); setName(''); await load() }} className="pro-focus">Create</Button>
       </HStack>
       <Stack spacing={4}>
         {boards.length === 0 ? (
@@ -39,7 +39,7 @@ export default function Boards() {
         ) : (
           <HStack>
             <Text>Select a board</Text>
-            <Select w="260px" placeholder="Select board" value={activeBoard} onChange={(e) => setActiveBoard(e.target.value ? Number(e.target.value) : '')}>
+            <Select w="260px" placeholder="Select board" value={activeBoard} onChange={(e) => setActiveBoard(e.target.value ? Number(e.target.value) : '')} className="pro-focus">
               {boards.map(b => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
@@ -47,7 +47,7 @@ export default function Boards() {
           </HStack>
         )}
         {activeBoard && (
-          <Box bg="whiteAlpha.100" p={3} rounded="md">
+          <Box className="glass p-3 rounded-md bg-white/30 dark:bg-slate-800/30">
             <Heading size="sm" mb={2}>Items</Heading>
             <HStack mb={2}>
               <Button size="sm" onClick={() => {
@@ -56,7 +56,7 @@ export default function Boards() {
                 const url = URL.createObjectURL(blob)
                 const a = document.createElement('a')
                 a.href = url; a.download = `board-${activeBoard}.json`; a.click(); URL.revokeObjectURL(url)
-              }}>Export JSON</Button>
+              }} className="pro-focus bg-brand-500 hover:bg-brand-600 text-white">Export JSON</Button>
               <Button size="sm" onClick={() => {
                 const header = ['id','created_at','prompt','response','model','version','tokens','latency_ms','timestamp']
                 const rows = items.map(it => [
@@ -75,19 +75,19 @@ export default function Boards() {
                 const url = URL.createObjectURL(blob)
                 const a = document.createElement('a')
                 a.href = url; a.download = `board-${activeBoard}.csv`; a.click(); URL.revokeObjectURL(url)
-              }}>Export CSV</Button>
+              }} className="pro-focus bg-green-500 hover:bg-green-600 text-white">Export CSV</Button>
             </HStack>
             {items.length === 0 ? (
               <Text opacity={0.7}>No items on this board yet.</Text>
             ) : (
               <VStack align="stretch" spacing={2}>
                 {items.map(it => (
-                  <Box key={it.id} bg="blackAlpha.400" p={2} rounded="md">
+                  <Box key={it.id} className="glass p-2 rounded-md hover:shadow-md transition-shadow bg-slate-50/50 dark:bg-slate-800/50">
                     <HStack justify="space-between">
                       <Text fontSize="xs" opacity={0.8}>{new Date(it.created_at).toLocaleString()}</Text>
                       <HStack>
-                        <Button size="xs" onClick={() => { setViewItem(it); onOpen() }}>View</Button>
-                        <Button size="xs" colorScheme="red" variant="outline" onClick={async () => { await removeBoardItem(Number(activeBoard), it.id); setItems(items.filter(x => x.id !== it.id)) }}>Remove</Button>
+                        <Button size="xs" onClick={() => { setViewItem(it); onOpen() }} className="pro-focus bg-blue-500 hover:bg-blue-600 text-white">View</Button>
+                        <Button size="xs" colorScheme="red" variant="outline" onClick={async () => { await removeBoardItem(Number(activeBoard), it.id); setItems(items.filter(x => x.id !== it.id)) }} className="pro-focus">Remove</Button>
                       </HStack>
                     </HStack>
                     <Divider my={2} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, FormControl, FormLabel, HStack, Input, Select, Textarea, useToast, VStack, Text, Code, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Divider, Link, Tooltip } from '@chakra-ui/react'
+import { Box, Button, FormControl, FormLabel, HStack, Input, Select, Textarea, useToast, VStack, Text, Code, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Divider, Link, Tooltip, Badge } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { runModel, listProviderModels } from '../lib/api'
 import { addLogToBoard, listBoards, fetchLogs } from '../lib/api'
@@ -108,10 +108,12 @@ export default function Runner({ onAfterRun }: Props) {
   return (
     <Box bg="whiteAlpha.100" p={4} rounded="md" mb={6}>
       <HStack justify="space-between" mb={3}>
-  <Heading size="sm">Runner</Heading>
-  <Tooltip label="Open guide for tips about Runner"><Link as={RouterLink} to="/guide#runner" color="teal.300">Guide: Runner</Link></Tooltip>
+        <Heading size="sm">Runner</Heading>
+        <Tooltip label="Open guide for tips about Runner"><Link as={RouterLink} to="/guide#runner" color="teal.300">Guide: Runner</Link></Tooltip>
       </HStack>
-      <HStack align="flex-start" spacing={6}>
+      
+      {/* Form Section */}
+      <VStack align="stretch" spacing={4} mb={8}>
         <VStack align="stretch" flex={1} spacing={3}>
           <HStack>
             <FormControl w="220px">
@@ -142,24 +144,55 @@ export default function Runner({ onAfterRun }: Props) {
             <FormLabel>Prompt</FormLabel>
             <Textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} />
           </FormControl>
-          <Button onClick={onRun} colorScheme="blue" isLoading={loading} isDisabled={!model}>Run</Button>
+          <Button onClick={onRun} colorScheme="blue" isLoading={loading} isDisabled={!model} size="lg" w="200px" alignSelf="center">
+            Run
+          </Button>
         </VStack>
-        <Box flex={1}>
-          <Text fontWeight="bold" mb={2}>Response</Text>
-          {result ? (
-            <Tabs variant="enclosed" colorScheme="blue">
-              <TabList>
-                <Tab>Preview</Tab>
-                <Tab>Raw</Tab>
-                <Tab>Meta</Tab>
-                <Tab isDisabled={!baselineLog && !best}>Diff</Tab>
+      </VStack>
+
+      {/* Response Section - Centered and Prominent */}
+      {result && (
+        <Box w="100%" maxW="6xl" mx="auto" mt={8}>
+          <Heading size="lg" mb={6} textAlign="center" color="blue.600">
+            Model Response
+          </Heading>
+            <Tabs variant="enclosed" colorScheme="blue" size="lg" mt={4}>
+              <TabList bg="gray.100" borderRadius="md" p={1}>
+                <Tab _selected={{ bg: "blue.500", color: "white" }} fontWeight="medium">Preview</Tab>
+                <Tab _selected={{ bg: "blue.500", color: "white" }} fontWeight="medium">Raw</Tab>
+                <Tab _selected={{ bg: "blue.500", color: "white" }} fontWeight="medium">Meta</Tab>
+                <Tab isDisabled={!baselineLog && !best} _selected={{ bg: "blue.500", color: "white" }} fontWeight="medium">Diff</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
                   <Box bg="blackAlpha.600" p={3} rounded="md" whiteSpace="pre-wrap">
-                    <Text fontSize="sm" mb={2} opacity={0.8}>{result.response.slice(0, 200)}{result.response.length > 200 ? '…' : ''}</Text>
-                    <Divider my={2} />
-                    <Text fontSize="xs" opacity={0.8}><b>Latency:</b> {result.latency_ms} ms · <b>Tokens:</b> {result.tokens} · <b>Model:</b> {result.model}</Text>
+                    <Box 
+                      p={4} 
+                      bg="gray.50" 
+                      borderRadius="md" 
+                      border="1px" 
+                      borderColor="gray.200"
+                      mb={4}
+                    >
+                      <Text fontSize="md" fontWeight="medium" mb={2} color="gray.700">
+                        Response Preview:
+                      </Text>
+                      <Text fontSize="lg" lineHeight="1.6" color="gray.800">
+                        {result.response.slice(0, 400)}{result.response.length > 400 ? '…' : ''}
+                      </Text>
+                    </Box>
+                    <Divider my={4} />
+                    <HStack spacing={6} py={2}>
+                      <Badge colorScheme="blue" px={3} py={1} borderRadius="full">
+                        <Text fontSize="sm"><b>Latency:</b> {result.latency_ms} ms</Text>
+                      </Badge>
+                      <Badge colorScheme="green" px={3} py={1} borderRadius="full">
+                        <Text fontSize="sm"><b>Tokens:</b> {result.tokens}</Text>
+                      </Badge>
+                      <Badge colorScheme="purple" px={3} py={1} borderRadius="full">
+                        <Text fontSize="sm"><b>Model:</b> {result.model}</Text>
+                      </Badge>
+                    </HStack>
                     <HStack mt={3}>
                       <Select placeholder={boards.length ? 'Select board' : 'No boards yet'} value={boardId} onChange={(e) => setBoardId(e.target.value ? Number(e.target.value) : '')} w="220px">
                         {boards.map(b => (
@@ -200,32 +233,76 @@ export default function Runner({ onAfterRun }: Props) {
                           }} isLoading={coachLoading}>Suggest Improvements</Button>
                         </HStack>
                         <VStack align="stretch" spacing={2} mt={2}>
-                          {suggestions.map((s, idx)=>(
-                            <Box key={idx} bg="blackAlpha.500" p={2} rounded="md">
-                              <Text fontSize="xs" opacity={0.8} mb={1}>{s.rationale}</Text>
-                              <Text fontSize="sm" whiteSpace="pre-wrap">{s.prompt}</Text>
+                          {suggestions.map((s, idx) => (
+                            <Box key={idx} bg="blue.50" p={5} rounded="2xl" boxShadow="sm" mb={3}>
+                              <Text fontSize="lg" fontWeight="semibold" color="blue.700" mb={2}>
+                                {s.rationale}
+                              </Text>
+                              <Text fontSize="xl" color="gray.900" whiteSpace="pre-wrap" mb={2}>
+                                {s.prompt}
+                              </Text>
                               <HStack mt={2}>
-                                <Button size="xs" onClick={async()=>{ setPrompt(s.prompt); await onRun() }}>Run this</Button>
+                                <Button size="md" colorScheme="blue" onClick={async()=>{ setPrompt(s.prompt); await onRun() }}>Run this</Button>
                               </HStack>
                             </Box>
                           ))}
-                          {(!suggestions || suggestions.length===0) && <Text fontSize="xs" opacity={0.7}>Click “Suggest Improvements” to generate 2–3 better prompt variants.</Text>}
+                          {(!suggestions || suggestions.length === 0) && (
+                            <Text fontSize="md" opacity={0.7} textAlign="center">
+                              Click “Suggest Improvements” to generate 2–3 better prompt variants.
+                            </Text>
+                          )}
                         </VStack>
                       </Box>
                     )}
                   </Box>
                 </TabPanel>
-                <TabPanel>
-                  <Box bg="blackAlpha.600" p={3} rounded="md" fontFamily="mono" whiteSpace="pre-wrap">
-                    <Code whiteSpace="pre-wrap">{result.response}</Code>
+                <TabPanel p={0}>
+                  <Box 
+                    bg="gray.50" 
+                    p={6} 
+                    borderRadius="md" 
+                    border="1px" 
+                    borderColor="gray.200"
+                    minH="300px"
+                  >
+                    <Text fontSize="xl" lineHeight="1.8" color="gray.800" whiteSpace="pre-wrap">
+                      {result.response}
+                    </Text>
                   </Box>
                 </TabPanel>
-                <TabPanel>
-                  <Text><b>Provider:</b> {result.provider}</Text>
-                  <Text><b>Model:</b> {result.model}</Text>
-                  <Text><b>Version:</b> {result.version || '-'}</Text>
-                  <Text><b>Latency:</b> {result.latency_ms} ms</Text>
-                  <Text><b>Tokens:</b> {result.tokens}</Text>
+                <TabPanel p={0}>
+                  <VStack align="stretch" spacing={4}>
+                    <Box bg="blue.50" p={4} borderRadius="md" border="1px" borderColor="blue.200">
+                      <Text fontSize="lg" fontWeight="bold" mb={3} color="blue.700">Model Information</Text>
+                      <VStack align="stretch" spacing={2}>
+                        <HStack justify="space-between">
+                          <Text fontWeight="medium" color="gray.600">Provider:</Text>
+                          <Text fontSize="lg" color="gray.800">{result.provider}</Text>
+                        </HStack>
+                        <HStack justify="space-between">
+                          <Text fontWeight="medium" color="gray.600">Model:</Text>
+                          <Text fontSize="lg" color="gray.800">{result.model}</Text>
+                        </HStack>
+                        <HStack justify="space-between">
+                          <Text fontWeight="medium" color="gray.600">Version:</Text>
+                          <Text fontSize="lg" color="gray.800">{result.version || '-'}</Text>
+                        </HStack>
+                      </VStack>
+                    </Box>
+                    <Box bg="green.50" p={4} borderRadius="md" border="1px" borderColor="green.200">
+                      <Text fontSize="lg" fontWeight="bold" mb={3} color="green.700">Performance Metrics</Text>
+                      <VStack align="stretch" spacing={2}>
+                        <HStack justify="space-between">
+                          <Text fontWeight="medium" color="gray.600">Latency:</Text>
+                          <Text fontSize="lg" color="gray.800">{result.latency_ms} ms</Text>
+                        </HStack>
+                        <HStack justify="space-between">
+                          <Text fontWeight="medium" color="gray.600">Tokens:</Text>
+                          <Text fontSize="lg" color="gray.800">{result.tokens}</Text>
+                        </HStack>
+                      </VStack>
+                    </Box>
+                  </VStack>
                 </TabPanel>
                 <TabPanel>
                   {(baselineLog || best) ? (
@@ -259,11 +336,14 @@ export default function Runner({ onAfterRun }: Props) {
                 </TabPanel>
               </TabPanels>
             </Tabs>
-          ) : (
-            <Text opacity={0.7}>Run to see the model response here.</Text>
-          )}
         </Box>
-      </HStack>
+      )}
+
+      {!result && (
+        <Box w="100%" maxW="6xl" mx="auto" mt={8} textAlign="center">
+          <Text opacity={0.7} fontSize="lg">Run to see the model response here.</Text>
+        </Box>
+      )}
     </Box>
   )
 }

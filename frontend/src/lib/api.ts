@@ -82,3 +82,9 @@ export async function promptCoach(input: { prompt: string; provider?: 'openai'|'
   const res = await axios.post(`${base}/api/prompt/coach`, input)
   return res.data
 }
+
+// Health check
+export async function checkHealth(): Promise<{status: string}> {
+  const res = await axios.get(`${base}/health`)
+  return res.data
+}

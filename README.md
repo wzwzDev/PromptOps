@@ -30,7 +30,11 @@ A lightweight, local-first dashboard for logging, analyzing, and visualizing LLM
 - Runner: call models via provider-agnostic /api/run (mock | ollama | openai)
 
 ## Quickstart (Docker)
-1. Create `.env` from `.env.example` if needed.
+1. Create `.env` from `.env.example` and set your OpenAI API key:
+```powershell
+Copy-Item .env.example .env
+# Edit .env and set OPENAI_API_KEY=your-key-here
+```
 2. Build and run:
 
 ```powershell
@@ -47,23 +51,10 @@ Tailwind + Vite notes:
 
 ### Configure providers (optional)
 - Mock provider requires no setup.
-- Ollama: Install Ollama and pull a local model (e.g., `ollama pull llama3:8b`), then expose it to the backend via `OLLAMA_HOST`.
-- OpenAI: Set `OPENAI_API_KEY` for the backend.
+- Ollama: Install Ollama and pull a local model (e.g., `ollama pull llama3:8b`), then ensure `OLLAMA_HOST` in `.env` points to your Ollama instance.
+- OpenAI: Set `OPENAI_API_KEY` in `.env` file.
 
-You can add env vars in `docker-compose.yml` under the backend service:
-
-```yaml
-services:
-  backend:
-    # ...existing config...
-    environment:
-      - API_HOST=0.0.0.0
-      - API_PORT=8000
-      - CORS_ORIGINS=http://localhost:5173
-      # optional, uncomment and edit:
-      # - OLLAMA_HOST=http://host.docker.internal:11434
-      # - OPENAI_API_KEY=sk-your-key
-```
+All configuration is now handled via the `.env` file (copied from `.env.example`). The docker-compose will automatically load these environment variables.
 
 Notes for Windows with Docker Desktop:
 - If Ollama runs on the host, set `OLLAMA_HOST=http://host.docker.internal:11434` so the container can reach it.
