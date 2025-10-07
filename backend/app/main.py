@@ -13,6 +13,7 @@ from .routers import baseline
 from .routers import coach
 from .routers import profile
 from .routers import tailor
+from .routers import prompt_mutation
 
 app = FastAPI(default_response_class=ORJSONResponse, title="PromptOps API")
 
@@ -40,7 +41,8 @@ app.include_router(todos.router)
 app.include_router(baseline.router)
 app.include_router(coach.router)
 app.include_router(profile.router)
-app.include_router(tailor.router)
+
+app.include_router(prompt_mutation.router)
 
 
 @app.get("/health")

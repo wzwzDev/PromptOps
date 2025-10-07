@@ -6,6 +6,7 @@ import PromptLeaderboard from '../components/PromptLeaderboard';
 import PromptSuggestions from '../components/PromptSuggestions';
 import LogsTable from '../components/LogsTable';
 import SmartAssistant from '../components/SmartAssistant';
+import PromptMutationPanel from '../components/PromptMutationPanel';
 
 const PromptTools: React.FC = () => (
   <Box maxW="900px" mx="auto" py={8}>
@@ -18,6 +19,7 @@ const PromptTools: React.FC = () => (
         <Tab>Suggestions</Tab>
         <Tab>Logs</Tab>
         <Tab>AI Assistant</Tab>
+        <Tab>Prompt Mutation</Tab>
       </TabList>
       <TabPanels>
         <TabPanel><Runner /></TabPanel>
@@ -26,6 +28,7 @@ const PromptTools: React.FC = () => (
         <TabPanel><PromptSuggestions logs={[]} /></TabPanel>
         <TabPanel><LogsTable logs={[]} /></TabPanel>
         <TabPanel><SmartAssistant /></TabPanel>
+        <TabPanel><PromptMutationPanel /></TabPanel>
       </TabPanels>
     </Tabs>
   </Box>

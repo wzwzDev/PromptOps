@@ -14,7 +14,7 @@ const InterviewPrep: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post(`${base}/api/tailor/interview-questions`, {
+      const res = await axios.post(`${base}/api/career/interview-questions`, {
         job_description: jobDescription,
         profile,
       });

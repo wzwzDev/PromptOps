@@ -12,6 +12,8 @@ openai
 docxtpl
 # For PDF extraction
 pdfminer.six==20221105
+# Vector DB integration
+pinecone>=3.0.0
 # Force Docker rebuild: 2025-10-06
 # Force Docker rebuild: 2025-10-06
 # Force Docker rebuild: 2025-10-06
