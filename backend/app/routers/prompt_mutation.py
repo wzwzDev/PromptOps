@@ -28,7 +28,7 @@ class FeedbackRequest(BaseModel):
     annotation: Optional[str] = None
     suggestion: Optional[str] = None
 
-class Feedback(SQLModel, table=True):
+class MutationFeedback(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     prompt: str
     mutation: str
@@ -62,7 +62,7 @@ index = pc.Index(PINECONE_INDEX)
 async def mutate_and_analyze(request: MutationRequest, session: Session = Depends(get_session)):
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     # Fetch feedback for mutations
-    feedbacks = session.query(Feedback).filter(Feedback.prompt == request.prompt).all()
+    feedbacks = session.query(MutationFeedback).filter(MutationFeedback.prompt == request.prompt).all()
     # Aggregate feedback
     rating_map = {}
     suggestion_map = {}
@@ -153,7 +153,7 @@ async def mutate_and_analyze(request: MutationRequest, session: Session = Depend
 # --- Feedback endpoint ---
 @router.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, session: Session = Depends(get_session)):
-    feedback = Feedback(
+    feedback = MutationFeedback(
         prompt=request.prompt,
         mutation=request.mutation,
         mutated_prompt=request.mutated_prompt,
