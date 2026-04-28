@@ -94,7 +94,7 @@ A comprehensive, enterprise-grade prompt engineering and management platform des
 
 
 
-**Tech Stack:****Tech Stack:**
+****Tech Stack:**
 
 - **Backend**: FastAPI, SQLModel, SQLite, Python 3.11+- **Backend**: FastAPI, SQLModel, SQLite, Python 3.11+
 
